@@ -47,10 +47,7 @@ PRODUCT_BOOT_JARS += \
 
 # Non-updatable APEX jars. Keep the list sorted.
 PRODUCT_BOOT_JARS += \
-    com.android.i18n:core-icu4j
-
-# Updatable APEX boot jars. Keep the list sorted by module names and then library names.
-PRODUCT_UPDATABLE_BOOT_JARS := \
+    com.android.i18n:core-icu4j \
     com.android.appsearch:framework-appsearch \
     com.android.conscrypt:conscrypt \
     com.android.ipsec:android.net.ipsec.ike \
@@ -64,6 +61,9 @@ PRODUCT_UPDATABLE_BOOT_JARS := \
     com.android.tethering:framework-connectivity \
     com.android.tethering:framework-tethering \
     com.android.wifi:framework-wifi
+
+# Updatable APEX boot jars. Keep the list sorted by module names and then library names.
+PRODUCT_UPDATABLE_BOOT_JARS :=
 
 # Updatable APEX system server jars. Keep the list sorted by module names and then library names.
 PRODUCT_UPDATABLE_SYSTEM_SERVER_JARS := \
