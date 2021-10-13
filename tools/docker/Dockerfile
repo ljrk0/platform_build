@@ -1,26 +1,30 @@
-FROM ubuntu:14.04
+FROM ubuntu:20.04
 ARG userid
 ARG groupid
 ARG username
 
-RUN apt-get update && apt-get install -y git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils xsltproc unzip python openjdk-7-jdk
+ENV DEBIAN_FRONTEND="noninteractive" TZ="UTC"
 
-RUN curl -o jdk8.tgz https://android.googlesource.com/platform/prebuilts/jdk/jdk8/+archive/master.tar.gz \
- && tar -zxf jdk8.tgz linux-x86 \
- && mv linux-x86 /usr/lib/jvm/java-8-openjdk-amd64 \
- && rm -rf jdk8.tgz
+RUN apt-get update 
 
-RUN curl -o /usr/local/bin/repo https://storage.googleapis.com/git-repo-downloads/repo \
- && echo "d06f33115aea44e583c8669375b35aad397176a411de3461897444d247b6c220  /usr/local/bin/repo" | sha256sum --strict -c - \
- && chmod a+x /usr/local/bin/repo
+# https://source.android.com/setup/build/initializing#installing-required-packages-ubuntu-1804
+RUN apt-get -y install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
 
-RUN groupadd -g $groupid $username \
- && useradd -m -u $userid -g $groupid $username \
- && echo $username >/root/username \
- && echo "export USER="$username >>/home/$username/.gitconfig
-COPY gitconfig /home/$username/.gitconfig
-RUN chown $userid:$groupid /home/$username/.gitconfig
-ENV HOME=/home/$username
-ENV USER=$username
+# https://source.android.com/setup/develop#installing-repo
+#RUN apt-get -y install repo
+RUN apt-get -y install python3 python-is-python3
+RUN REPO=$(mktemp /tmp/repo.XXXXXXXXX) && \
+    curl -o ${REPO} https://storage.googleapis.com/git-repo-downloads/repo && \
+    gpg --recv-key 8BB9AD793E8E6153AF0F9A4416530D5E920F5C65 && \
+    curl -s https://storage.googleapis.com/git-repo-downloads/repo.asc | \
+        gpg --verify - ${REPO} && \
+    install -Dm 755 ${REPO} /usr/local/bin/repo
 
-ENTRYPOINT chroot --userspec=$(cat /root/username):$(cat /root/username) / /bin/bash -i
+
+# OpenJDK/jar, jq, python-protobuf: android-prepare-vendor
+# signify: required for signing factory images zips.
+RUN apt-get -y install jq openjdk-11-jdk python-protobuf signify 
+
+COPY gitconfig /root/.gitconfig
+WORKDIR /src
+ENTRYPOINT [ "/bin/bash", "-i" ]
