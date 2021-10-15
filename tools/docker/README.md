@@ -10,7 +10,7 @@ $ docker build --build-arg userid=$(id -u) --build-arg groupid=$(id -g) --build-
 
 Then you can start up new instances with:
 ```
-$ docker run -it --rm -v $ANDROID_BUILD_TOP:/src android-buildf-focal
+$ docker run -it --rm -v $ANDROID_BUILD_TOP:/src android-build-focal
 > repo init -u https://github.com/GrapheneOS/platform_manifest.git -b 12
 > repo sync -j$(nproc)
 > source script/envsetup.sh
