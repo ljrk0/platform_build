@@ -1,16 +1,21 @@
 The Dockerfile in this directory sets up an Ubuntu Focal image ready to build
 GrapheneOS 11 or better.
 
-First, build the image (use `docker` or `podman`):
+# 1. Build the image
+- Use `docker` or `podman`
 ```
 # Copy your host gitconfig, or create a stripped down version
 $ cp ~/.gitconfig gitconfig
 $ docker build --build-arg userid=$(id -u) --build-arg groupid=$(id -g) --build-arg username=$(id -un) -t android-build-focal .
 ```
 
-Then you can start up new instances of the interactive environment with
+## 2. Start new instances
+
+You can start up new instances of the interactive environment with
 `docker run` or `podman run`.
 This may or may not require root privileges, read below for more information.
+
+Note: Replace `$ANDROID_BUILD_TOP` with where the Android source directory resides.
 ```
 $ docker run -it --rm -v $ANDROID_BUILD_TOP:/src android-build-focal
 > repo init -u https://github.com/GrapheneOS/platform_manifest.git -b 12
@@ -52,3 +57,9 @@ $ sudo usermod -aG docker $USER
 ```
 Now logout and log back in again, and you should be able to use `docker`/`podman`
 without `sudo`.
+
+## Emulator
+
+If you want to run the emulator, you need to use the rootfull container engine
+and also pass the `--privileged` flag to `docker run`/`podman run` in order
+for the container to be allowed to access the kernel (KVM).
