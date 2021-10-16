@@ -23,7 +23,7 @@ RUN REPO=$(mktemp /tmp/repo.XXXXXXXXX) && \
 
 # OpenJDK/jar, jq, python-protobuf: android-prepare-vendor
 # signify: required for signing factory images zips.
-RUN apt-get -y install jq openjdk-11-jdk python-protobuf signify 
+RUN apt-get -y install jq openjdk-11-jdk python-protobuf signify rsync
 
 COPY gitconfig /root/.gitconfig
 WORKDIR /src
