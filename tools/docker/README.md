@@ -1,16 +1,20 @@
 The Dockerfile in this directory sets up an Ubuntu Focal image ready to build
 GrapheneOS 11 or better.
 
-First, build the image (use `docker` or `podman`):
+# 1. Build the image
+- Use `docker` or `podman`
 ```
 # Copy your host gitconfig, or create a stripped down version
 $ cp ~/.gitconfig gitconfig
 $ docker build --build-arg userid=$(id -u) --build-arg groupid=$(id -g) --build-arg username=$(id -un) -t android-build-focal .
 ```
 
-Then you can start up new instances with:
+## 2. Start new instances
+- Replace `/path/to/saved/source` with where you want android source code to be saved to
+- `--privileged` is required for `emulator`, enabling KVM to function
+
 ```
-$ docker run -it --rm -v $ANDROID_BUILD_TOP:/src android-build-focal
+$ docker run --privileged -it --rm -v /path/to/saved/source:/src android-build-focal
 > repo init -u https://github.com/GrapheneOS/platform_manifest.git -b 12
 > repo sync -j$(nproc)
 > source script/envsetup.sh
